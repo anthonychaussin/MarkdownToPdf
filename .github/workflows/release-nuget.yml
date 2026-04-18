@@ -1,0 +1,72 @@
+# Publishes the MarkdownToPdf umbrella package (Core + Fonts + Markdown DLLs) to nuget.org.
+#
+# Prerequisites (repository Settings → Secrets and variables → Actions):
+#   NUGET_API_KEY — API key from https://www.nuget.org/account/apikeys with
+#   scope "Push" for the MdToPdf package ID (or the whole account).
+#
+# Version: CI overrides MSBuild <Version> with 0.1.<GITHUB_RUN_NUMBER> so each
+# successful run produces a new, strictly increasing version on NuGet.
+
+name: Release NuGet packages
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+concurrency:
+  group: nuget-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    env:
+      PACKAGE_VERSION: 0.1.${{ github.run_number }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDKs
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+          cache: true
+          cache-dependency-path: |
+            **/packages.lock.json
+            **/*.csproj
+            Directory.Build.props
+
+      - name: Restore
+        run: dotnet restore MarkdownToPdf.slnx
+
+      - name: Build (Release)
+        run: dotnet build MarkdownToPdf.slnx -c Release --no-restore -p:Version=${{ env.PACKAGE_VERSION }}
+
+      - name: Test
+        run: dotnet test MarkdownToPdf.slnx -c Release --no-build --verbosity normal
+
+      - name: Pack
+        run: dotnet pack src/MarkdownToPdf/MarkdownToPdf.csproj -c Release --no-build -o "${{ github.workspace }}/artifacts" -p:Version=${{ env.PACKAGE_VERSION }} -p:PackageVersion=${{ env.PACKAGE_VERSION }}
+
+      - name: Push packages to NuGet.org
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        run: |
+          set -e
+          if [ -z "${NUGET_API_KEY:-}" ]; then
+            echo "::error::NUGET_API_KEY is not set. Add it under Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          shopt -s nullglob
+          for pkg in "${{ github.workspace }}"/artifacts/*.nupkg; do
+            echo "Pushing $pkg"
+            dotnet nuget push "$pkg" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          done

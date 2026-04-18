@@ -1,0 +1,72 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Umbrella NuGet package only: no source. Builds MarkdownToPdf.Markdown (which pulls
+    Core + Fonts), then packs the three assemblies into one MarkdownToPdf nupkg.
+    Library code stays in MarkdownToPdf.Core / Fonts / Markdown projects.
+  -->
+
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net10.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AddLibraryOutputsToTfmSpecificPackage</TargetsForTfmSpecificContentInPackage>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>MdToPdf</PackageId>
+    <Title>MarkdownToPdf</Title>
+    <Description>Create PDF documents from Markdown or a fluent C# document model, with support for headings, paragraphs, lists, tables, images, checkboxes, barcodes, and QR codes.</Description>
+    <PackageTags>pdf;markdown;rendering;streaming;document</PackageTags>
+    <PackageIcon>mdtopdf-icon.png</PackageIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MarkdownToPdf.Markdown\MarkdownToPdf.Markdown.csproj"
+                      ReferenceOutputAssembly="false"
+                      PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.11" />
+    <PackageReference Include="ZXing.Net" Version="0.16.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\assets\mdtopdf-icon.png" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+
+  <Target Name="AddLibraryOutputsToTfmSpecificPackage">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(MSBuildThisFileDirectory)..\MarkdownToPdf.Core\bin\$(Configuration)\$(TargetFramework)\MarkdownToPdf.Core.dll">
+        <PackagePath>lib/$(TargetFramework)/MarkdownToPdf.Core.dll</PackagePath>
+      </TfmSpecificPackageFile>
+      <TfmSpecificPackageFile Include="$(MSBuildThisFileDirectory)..\MarkdownToPdf.Core\bin\$(Configuration)\$(TargetFramework)\MarkdownToPdf.Core.xml"
+                                Condition="Exists('$(MSBuildThisFileDirectory)..\MarkdownToPdf.Core\bin\$(Configuration)\$(TargetFramework)\MarkdownToPdf.Core.xml')">
+        <PackagePath>lib/$(TargetFramework)/MarkdownToPdf.Core.xml</PackagePath>
+      </TfmSpecificPackageFile>
+      <TfmSpecificPackageFile Include="$(MSBuildThisFileDirectory)..\MarkdownToPdf.Fonts\bin\$(Configuration)\$(TargetFramework)\MarkdownToPdf.Fonts.dll">
+        <PackagePath>lib/$(TargetFramework)/MarkdownToPdf.Fonts.dll</PackagePath>
+      </TfmSpecificPackageFile>
+      <TfmSpecificPackageFile Include="$(MSBuildThisFileDirectory)..\MarkdownToPdf.Fonts\bin\$(Configuration)\$(TargetFramework)\MarkdownToPdf.Fonts.xml"
+                                Condition="Exists('$(MSBuildThisFileDirectory)..\MarkdownToPdf.Fonts\bin\$(Configuration)\$(TargetFramework)\MarkdownToPdf.Fonts.xml')">
+        <PackagePath>lib/$(TargetFramework)/MarkdownToPdf.Fonts.xml</PackagePath>
+      </TfmSpecificPackageFile>
+      <TfmSpecificPackageFile Include="$(MSBuildThisFileDirectory)..\MarkdownToPdf.Markdown\bin\$(Configuration)\$(TargetFramework)\MarkdownToPdf.Markdown.dll">
+        <PackagePath>lib/$(TargetFramework)/MarkdownToPdf.Markdown.dll</PackagePath>
+      </TfmSpecificPackageFile>
+      <TfmSpecificPackageFile Include="$(MSBuildThisFileDirectory)..\MarkdownToPdf.Markdown\bin\$(Configuration)\$(TargetFramework)\MarkdownToPdf.Markdown.xml"
+                                Condition="Exists('$(MSBuildThisFileDirectory)..\MarkdownToPdf.Markdown\bin\$(Configuration)\$(TargetFramework)\MarkdownToPdf.Markdown.xml')">
+        <PackagePath>lib/$(TargetFramework)/MarkdownToPdf.Markdown.xml</PackagePath>
+      </TfmSpecificPackageFile>
+    </ItemGroup>
+  </Target>
+
+</Project>

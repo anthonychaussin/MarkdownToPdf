@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/samples/">
+    <Project Path="samples/MarkdownToPdf.ConsoleSample/MarkdownToPdf.ConsoleSample.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/MarkdownToPdf/MarkdownToPdf.csproj" />
+    <Project Path="src/MarkdownToPdf.Core/MarkdownToPdf.Core.csproj" />
+    <Project Path="src/MarkdownToPdf.Fonts/MarkdownToPdf.Fonts.csproj" />
+    <Project Path="src/MarkdownToPdf.Markdown/MarkdownToPdf.Markdown.csproj" />
+    <Project Path="src/MarkdownToPdf.Tests/MarkdownToPdf.Tests.csproj" />
+  </Folder>
+</Solution>
