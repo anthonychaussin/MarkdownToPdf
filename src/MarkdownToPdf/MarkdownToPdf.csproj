@@ -14,8 +14,7 @@
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <IncludeSymbols>false</IncludeSymbols>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);AddLibraryOutputsToTfmSpecificPackage</TargetsForTfmSpecificContentInPackage>
   </PropertyGroup>
